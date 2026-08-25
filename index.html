@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnet de chantier — 39 av. de Saint-Mandé</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#f4f3ee;color:#23221e}
+.wrap{max-width:900px;margin:0 auto;padding:16px 14px 60px}
+h1{font-size:19px;font-weight:600;margin:0 0 2px}
+.sub{margin:0 0 12px;color:#7a786f;font-size:13px}
+.ptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+.ptools button{padding:8px 12px;border-radius:10px;border:1px solid #23221e;background:#23221e;color:#fff;font-size:13px;cursor:pointer}
+.ptools button.ghost{background:#fff;color:#55534b;border-color:#d9d7cc}
+.ptools .hint{font-size:12px;color:#8a887e;flex-basis:100%}
+.planbox{background:#fff;border:1px solid #e3e1d8;border-radius:16px;padding:8px}
+svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.hot{cursor:pointer;transition:opacity .12s}.hot:hover{opacity:.75}
+.legend{display:flex;gap:14px;font-size:12px;color:#66645c;margin:10px 2px 4px;flex-wrap:wrap}
+.legend .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+.rooms-legend{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.rooms-legend span{font-size:12px;color:#55534b;background:#fff;border:1px solid #e3e1d8;border-radius:999px;padding:4px 10px}
+.rooms-legend b{color:#23221e}
+.fixcard{display:none;background:#fff;border:1px solid #c9a24a;border-radius:14px;padding:12px;margin:12px 0}
+.fixcard.open{display:block}
+.fixcard b{font-size:15px}
+.fixcard input{width:100%;margin-top:8px;padding:9px 10px;border:1px solid #d9d7cc;border-radius:10px;font:inherit;background:#fff}
+.fixcard .btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.fixcard button{padding:9px 12px;border-radius:10px;font-size:13px;cursor:pointer;border:1px solid #23221e;background:#23221e;color:#fff}
+.fixcard button.ghost{background:#fff;color:#55534b;border-color:#d9d7cc}
+.fixcard button.gold{background:#c9a24a;border-color:#c9a24a}
+.genbtn{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:14px 0 0;padding:11px 14px;border-radius:12px;border:1px solid #d9d7cc;background:#fff;font-size:14px;cursor:pointer;color:#23221e;width:100%}
+.gcount{background:#e24b4a;color:#fff;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px}
+.gcount.zero{background:#8ec98f}
+.devis{margin-top:26px}
+.devis h2{font-size:16px;font-weight:600;margin:0 0 3px}
+.devis .dsub{font-size:12px;color:#8a887e;margin:0 0 10px}
+.recap{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.recap span{font-size:12px;border-radius:10px;padding:6px 10px;border:1px solid #e3e1d8;background:#fff}
+.recap b{font-weight:600}.recap .g{color:#2f7d33}.recap .a{color:#8a5a0b}.recap .r{color:#a32d2d}
+.lot{background:#fff;border:1px solid #e3e1d8;border-radius:12px;padding:4px 12px 6px;margin-bottom:10px}
+.loth{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#7a786f;font-weight:600;padding:8px 0 6px;border-bottom:1px solid #eeece4}
+.loth .lt{color:#98968c;font-weight:600}
+.dvrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f1e9}
+.dvrow:last-child{border-bottom:none}
+.dvrow .l{flex:1;font-size:13px;line-height:1.35}
+.dvrow .l .n{color:#b0aea3;font-size:11px;margin-right:5px}
+.dvrow .l .m{color:#98968c;font-size:11px;display:block;margin-top:3px}
+.dvrow .l .m b{color:#23221e;font-weight:600}
+.qin{width:54px;padding:3px 6px;border:1px solid #c9a24a;border-radius:8px;font:inherit;font-size:12px;text-align:center;margin-right:3px;background:#fffdf7}
+.dvrow.no .l .lbl{text-decoration:line-through;color:#adaba0}
+.dvpill{font-size:11px;font-weight:500;padding:5px 10px;border-radius:999px;cursor:pointer;white-space:nowrap;user-select:none;text-align:center;min-width:96px}
+.dv-todo{background:#faeeda;color:#8a5a0b}.dv-done{background:#e6f2e2;color:#2f7d33}.dv-no{background:#fceded;color:#a32d2d}
+.rv{display:none}
+.back{display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:#7a5c12;font-size:14px;cursor:pointer;padding:4px 0;margin-bottom:6px}
+.rvhead{font-size:19px;font-weight:600;margin:2px 0 2px}
+.rvsub{color:#7a786f;font-size:13px;margin:0 0 12px}
+.delroom{border:1px solid #e2b4b4;background:#fff;color:#a32d2d;border-radius:10px;padding:7px 11px;font-size:13px;cursor:pointer;margin:0 0 14px}
+.roomdraw{background:#fff;border:1px solid #e3e1d8;border-radius:16px;padding:8px;margin-bottom:14px}
+.equip{margin-bottom:16px}
+.equip h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;font-weight:600;color:#8a5a0b}
+.eqrow{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e3e1d8;border-radius:12px;padding:9px 11px;margin-bottom:8px;cursor:pointer}
+.eqrow .en{flex:1;font-size:14px}
+.eqrow .es{font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px}
+.es-ok{background:#f6edd6;color:#7a5c12}.es-no{background:#efece1;color:#8a887e}
+.sec{margin-bottom:18px}
+.sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;font-weight:600}
+.sec h3.todo{color:#a32d2d}.sec h3.done{color:#2f7d33}.sec h3.note{color:#8a5a0b}
+.item{background:#fff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 11px;margin-bottom:8px;position:relative}
+.item.is-done{opacity:.6}
+.item .t{font-size:14px;font-weight:500;margin:0 30px 3px 0}
+.item .d{font-size:12px;color:#6a6860;margin:0}
+.item .meta{margin-top:7px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:500;padding:4px 9px;border-radius:999px;cursor:pointer;user-select:none}
+.st-todo{background:#efece1;color:#6a6860}.st-prog{background:#e2edf7;color:#1a5fa0}.st-done{background:#e6f2e2;color:#2f7d33}.st-ok{background:#dff0ec;color:#0f6e56}
+.del{position:absolute;top:8px;right:8px;width:24px;height:24px;border:none;background:transparent;color:#c2c0b6;font-size:17px;cursor:pointer;line-height:1}
+.del:hover{color:#a32d2d}
+.note{background:#fdf9ef;border:1px solid #f0e4c8;border-radius:12px;padding:9px 11px;margin-bottom:8px;font-size:13px;color:#5a4a1f;position:relative}
+.note .dt{font-size:11px;color:#b39a5c;display:block;margin-top:3px}
+.addrow{display:flex;gap:7px;margin-top:6px}
+.addrow input{flex:1;min-width:0;padding:8px 10px;border:1px solid #d9d7cc;border-radius:10px;font:inherit;background:#fff}
+.addrow button{padding:8px 12px;border-radius:10px;border:1px solid #23221e;background:#23221e;color:#fff;font-size:13px;cursor:pointer}
+.empty{font-size:13px;color:#a3a196;padding:4px 2px}
+.planswitch{display:inline-flex;border:1px solid #d9d7cc;border-radius:10px;overflow:hidden;margin:0 0 10px}.planswitch button{border:none;background:#fff;color:#55534b;padding:8px 14px;font-size:13px;cursor:pointer}.planswitch button.on{background:#23221e;color:#fff}
+.eqrow{position:relative}.eqadd{margin-top:6px;padding:8px 12px;border:1px dashed #c9a24a;background:#fffdf7;color:#7a5c12;border-radius:10px;font-size:13px;cursor:pointer}.eqdel{border:none;background:transparent;color:#c2c0b6;font-size:16px;cursor:pointer;margin-left:6px}
+.docrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}.docbtn{padding:8px 12px;border:1px dashed #c9a24a;border-radius:10px;font-size:13px;color:#7a5c12;cursor:pointer;background:#fffdf7}.docname{font-size:12px;color:#55534b}
+#roomSvg{touch-action:none}
+.matrecap{margin-top:26px}.matrecap h2{font-size:16px;font-weight:600;margin:0 0 3px}.matgrp{margin-bottom:14px}.matgrp h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:10px 0 8px;font-weight:600}.matgrp h3.done{color:#2f7d33}.matgrp h3.todo{color:#a32d2d}.matrow{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e3e1d8;border-radius:12px;padding:9px 11px;margin-bottom:7px}.matrow .ml{flex:1;font-size:13px}.matrow .mr{color:#98968c;font-size:11px;background:#f1efe8;border-radius:6px;padding:1px 6px;margin-left:4px}.mlink{font-size:12px;color:#7a5c12;background:#f6edd6;border-radius:999px;padding:3px 10px;text-decoration:none}.mtodo{font-size:11px;color:#8a887e;background:#efece1;border-radius:999px;padding:3px 9px}
+#devisBody{max-height:380px;overflow:hidden;position:relative}#devisBody.expanded{max-height:none}#devisBody:not(.expanded)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(rgba(244,243,238,0),rgba(244,243,238,1));pointer-events:none}.morebtn{margin:8px auto 0;display:block;padding:9px 16px;border-radius:10px;border:1px solid #d9d7cc;background:#fff;color:#23221e;font-size:13px;cursor:pointer}
+#checkBody{max-height:420px;overflow:hidden;position:relative}#checkBody.expanded{max-height:none}#checkBody:not(.expanded)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(rgba(244,243,238,0),rgba(244,243,238,1));pointer-events:none}.ck-todo{background:#faeeda;color:#8a5a0b}.ck-prog{background:#e2edf7;color:#1a5fa0}.ck-done{background:#e6f2e2;color:#2f7d33}.ck-na{background:#efece1;color:#8a887e}
+body.ro .ptools{display:none}body.ro .eqadd,body.ro .eqdel,body.ro .del,body.ro .addrow,body.ro #fxSave,body.ro #pcSave,body.ro .docbtn,body.ro #fxDocDel,body.ro #pcDocDel,body.ro #delRoomBtn{display:none}#roBanner{display:none;background:#23221e;color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;margin:0 0 12px;text-align:center}body.ro #roBanner{display:block}body.ro .fixcard input{background:#f4f3ee}
+.histrow{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f0eee6;font-size:12px}.hw{font-weight:600;border-radius:6px;padding:2px 7px;font-size:11px}.hp{background:#e2edf7;color:#1a5fa0}.he{background:#f6edd6;color:#7a5c12}.hm{flex:1;color:#3f3e38}.ht{color:#a3a196;font-size:11px}#histBody{max-height:300px;overflow:hidden;position:relative}#histBody.expanded{max-height:none}#histBody:not(.expanded)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(rgba(244,243,238,0),rgba(244,243,238,1));pointer-events:none}
+.ckrestore{border:1px solid #d9d7cc;background:#fff;color:#55534b;border-radius:8px;padding:3px 9px;font-size:11px;cursor:pointer}.ckx{border:none;background:transparent;color:#c2c0b6;font-size:16px;cursor:pointer;line-height:1;margin-right:4px}.ckx:hover{color:#a32d2d}
+</style>
+</head>
+<body><div id="gate" style="position:fixed;inset:0;background:#f4f3ee;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif"><div style="max-width:360px;width:100%;text-align:center;color:#23221e"><h1 style="font-size:20px;margin:0 0 2px">Carnet de chantier</h1><div id="gateStep1"><p style="color:#7a786f;font-size:14px;margin:2px 0 0">39 av. de Saint-Mandé — accès protégé</p><input id="gatePass" type="password" placeholder="Mot de passe" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d7cc;border-radius:10px;margin-top:12px;font-size:15px"><button onclick="gateSubmit()" style="width:100%;padding:11px;margin-top:10px;border:none;border-radius:10px;background:#23221e;color:#fff;font-size:15px;cursor:pointer">Entrer</button><div id="gateMsg" style="color:#a32d2d;font-size:12px;margin-top:8px;min-height:16px"></div></div><div id="gateSetup" style="display:none"><p style="color:#7a786f;font-size:14px">Première configuration — définis les 2 mots de passe :</p><input id="setOwner" type="text" placeholder="Ton mot de passe (propriétaire)" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d7cc;border-radius:10px;margin-top:10px;font-size:15px"><input id="setViewer" type="text" placeholder="Mot de passe entrepreneur" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d7cc;border-radius:10px;margin-top:8px;font-size:15px"><button onclick="setupSubmit()" style="width:100%;padding:11px;margin-top:10px;border:none;border-radius:10px;background:#23221e;color:#fff;font-size:15px;cursor:pointer">Créer l'accès</button></div></div></div>
+<div class="wrap">
+<div id="planView">
+ <h1>Carnet de chantier</h1>
+ <p class="sub">39 avenue de Saint-Mandé — touche une pièce, un placard, une fenêtre ou le WC</p>
+ <div id="roBanner">👁 Version entrepreneur — lecture seule</div><div class="planswitch"><button id="bgPlan" class="on">Plan</button><button id="bgElec">Plan élec</button></div>
+ <div class="ptools">
+  <button id="editBtn">Ajuster les zones</button>
+  <button id="addRoomBtn" class="ghost">+ Ajouter une pièce</button>
+  <button id="resetBtn" class="ghost" style="display:none">Réinitialiser</button>
+  <button id="exportBtn" class="ghost">Exporter</button>
+  <button id="importBtn" class="ghost">Importer</button><button id="genSendBtn" class="ghost">Générer la version à envoyer</button>
+  <span id="editHint" class="hint" style="display:none">Glisse une zone pour la déplacer · tire le coin doré pour redimensionner</span>
+ </div>
+ <div class="planbox"><svg id="plan" viewBox="0 0 2150 1521" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Plan"></svg></div>
+ <div class="legend"><span><span class="dot" style="background:#e24b4a"></span>pièce</span><span><span class="dot" style="background:#378add"></span>placard</span><span><span class="dot" style="background:#23221e"></span>fenêtre</span><span><span class="dot" style="background:#1d9e75"></span>WC</span></div>
+ <div class="fixcard" id="planCard">
+  <b id="pcName"></b>
+  <input id="pcProd" placeholder="Nom du produit choisi">
+  <input id="pcUrl" placeholder="Lien du produit (https://…)">
+  <input id="pcNote" placeholder="Note libre"><input id="pcQuant" placeholder="Quantité (ex. 2, 12 m²)"><input id="pcDim" placeholder="Dimensions"><input id="pcRef" placeholder="Référence / modèle"><input id="pcCol" placeholder="Coloris / finition">
+  <div class="docrow"><label class="docbtn">Joindre un document<input type="file" id="pcDoc" style="display:none"></label><span class="docname" id="pcDocName"></span><button class="ghost" id="pcDocOpen" style="display:none">Ouvrir</button><button class="ghost" id="pcDocDel" style="display:none">Retirer</button></div><div class="btns"><button id="pcSave">Enregistrer</button><button class="gold" id="pcOpen">Ouvrir le lien</button><button class="ghost" id="pcClose">Fermer</button></div>
+ </div>
+ <div class="rooms-legend" id="roomsLegend"></div>
+ <button class="genbtn" id="genBtn"><span><b>Général / chantier</b> — devis, élec, clim…</span><span class="gcount" id="genCount">0</span></button>
+ <div class="devis"><h2>Comparatif du devis SLK</h2><p class="dsub" id="devisSub"></p><div class="recap" id="devisRecap"></div><div id="devisBody"></div><button id="devisMore" class="morebtn">Continuer à lire le devis</button></div><div class="matrecap"><h2>Matériaux choisis</h2><p class="dsub" id="matSub"></p><div id="matBody"></div></div><div class="matrecap"><h2>Documents &amp; liens</h2><p class="dsub" id="docsSub"></p><div id="docsBody"></div></div><div class="devis"><h2>Checklist rénovation — tout à choisir</h2><p class="dsub" id="checkSub"></p><div id="checkBody"></div><button id="checkMore" class="morebtn">Continuer à lire la checklist</button></div><div class="devis"><h2>Historique des modifications</h2><p class="dsub" id="histSub"></p><div id="histBody"></div><button id="histMore" class="morebtn">Continuer à lire l historique</button></div>
+</div>
+
+<div class="rv" id="roomView">
+ <button class="back" id="backBtn">&larr; Retour au plan</button>
+ <h2 class="rvhead" id="rvName"></h2>
+ <p class="rvsub" id="rvArea"></p>
+ <button class="delroom" id="delRoomBtn" style="display:none">Supprimer cette pièce</button>
+ <div class="roomdraw"><svg id="roomSvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img"></svg></div>
+ <div class="fixcard" id="fixcard">
+  <b id="fxName"></b>
+  <input id="fxProd" placeholder="Nom du produit choisi">
+  <input id="fxUrl" placeholder="Lien du produit (https://…)">
+  <input id="fxNote" placeholder="Note libre"><input id="fxQuant" placeholder="Quantité (ex. 2, 12 m²)"><input id="fxDim" placeholder="Dimensions"><input id="fxRef" placeholder="Référence / modèle"><input id="fxCol" placeholder="Coloris / finition">
+  <div class="docrow"><label class="docbtn">Joindre un document<input type="file" id="fxDoc" style="display:none"></label><span class="docname" id="fxDocName"></span><button class="ghost" id="fxDocOpen" style="display:none">Ouvrir</button><button class="ghost" id="fxDocDel" style="display:none">Retirer</button></div><div class="btns"><button id="fxSave">Enregistrer</button><button class="gold" id="fxOpen">Ouvrir le lien</button><button class="ghost" id="fxClose">Fermer</button></div>
+ </div>
+ <div class="equip" id="equipSec"><h3>Équipements — touche un point sur le plan</h3><div id="equipList"></div></div>
+ <div class="sec"><h3 class="todo">À faire</h3><div id="secTodo"></div><div class="addrow"><input id="addTodo" placeholder="Ajouter une demande…"><button data-add="todo">+</button></div></div>
+ <div class="sec"><h3 class="done">Fait</h3><div id="secDone"></div></div>
+ <div class="sec"><h3 class="note">Notes / modifs</h3><div id="secNote"></div><div class="addrow"><input id="addNote" placeholder="Une note, une modif…"><button data-add="note">+</button></div></div>
+</div>
+</div>
+
+<script>
+var IMG="/plan.jpg";
+var IMG_ELEC="/plan-elec.jpg";var curBg=IMG;var STK="carnet_plan_reel_39_v6";
+var ROOMS=[
+ {id:'sejour',num:1,name:'Séjour / salle à manger',area:'72.7 m²',x:505,y:1000,w:770,h:360},
+ {id:'cuisine',num:2,name:'Cuisine',area:'',x:1275,y:1000,w:355,h:360},
+ {id:'ch2',num:3,name:"Chambre + salle d'eau",area:'11.3 m²',x:975,y:610,w:300,h:355},
+ {id:'ch3',num:4,name:'Chambre',area:'17.8 m²',x:1150,y:462,w:475,h:240},
+ {id:'buand',num:5,name:'Buanderie',area:'2.7 m²',x:735,y:590,w:130,h:185},
+ {id:'mezz',num:6,name:'Mezzanine',area:'9.3 m²',x:505,y:590,w:225,h:365},
+ {id:'ch7',num:7,name:'Chambre',area:'',x:505,y:360,w:353,h:222},
+ {id:'sdb8',num:8,name:'Salle de bain',area:'',x:505,y:80,w:353,h:280}
+];
+var ELEMS=[
+ {cat:'placard',id:'dressA',label:'Dressing',x:515,y:225,w:180,h:62},
+ {cat:'placard',id:'dressB',label:'Dressing',x:695,y:225,w:162,h:62},
+ {cat:'placard',id:'placCh4',label:'Placard',x:1155,y:490,w:80,h:180},
+ {cat:'placard',id:'placNew1',label:'Placard',x:1000,y:640,w:130,h:70},
+ {cat:'placard',id:'placNew2',label:'Placard',x:560,y:820,w:130,h:70},
+ {cat:'wc',id:'wcNew',label:'WC',x:780,y:660,w:80,h:80},
+ {cat:'window',id:'w1',label:'Fenêtre',x:1235,y:455,w:82,h:18},
+ {cat:'window',id:'w2',label:'Fenêtre',x:1455,y:455,w:82,h:18},
+ {cat:'window',id:'w4',label:'Fenêtre séjour',x:700,y:1346,w:92,h:18},
+ {cat:'window',id:'w5',label:'Fenêtre séjour',x:925,y:1346,w:92,h:18},
+ {cat:'window',id:'w6',label:'Fenêtre séjour',x:1150,y:1346,w:92,h:18},
+ {cat:'window',id:'w7',label:'Fenêtre séjour',x:1420,y:1346,w:92,h:18}
+];
+var ELSTYLE={placard:{fill:'rgba(55,138,221,0.30)',stroke:'#2e5aa5',tx:'#1a3f6e'},wc:{fill:'rgba(29,158,117,0.32)',stroke:'#0f6e56',tx:'#0b4a3b'}};
+var FIX={
+ sdb8:[{id:'douche',label:'Douche',x:560,y:175},{id:'vasques',label:'Vasques',x:700,y:120},{id:'wc',label:'WC',x:640,y:150},{id:'baignoire',label:'Baignoire',x:805,y:165}],
+ ch2:[{id:'douche',label:'Douche',x:1010,y:665},{id:'vasque',label:'Vasque',x:1050,y:635},{id:'wc',label:'WC',x:1120,y:900}],
+ cuisine:[{id:'cuisine',label:'Cuisine Schmidt',x:1450,y:1120}],
+ sejour:[{id:'parquet',label:'Parquet',x:800,y:1180}]
+};
+var SEED_TASKS=[
+ {room:'sejour',t:'Structure : trémie + IPN double hauteur',d:'Plan visé Fotso avant de refermer.',s:'prog',p:'h'},
+ {room:'sejour',t:'Parquet chêne point de Hongrie',d:'Choix teinte/finition sur échantillon.',s:'todo',p:'h'},
+ {room:'sejour',t:'Enduit décoratif murs & plafonds',d:'Type + teintes à choisir.',s:'todo',p:'m'},
+ {room:'sejour',t:'Clim gainable : bouches de soufflage',d:'',s:'todo',p:'m'},
+ {room:'cuisine',t:'Cuisine Schmidt fournie + posée',d:'Direct Schmidt, TVA 10%. Hors devis SLK.',s:'done',p:'h'},
+ {room:'cuisine',t:'Attentes eau/évac + élec/induction + hotte',d:'',s:'todo',p:'h'},
+ {room:'ch2',t:'Parquet + élec',d:'',s:'todo',p:'m'},
+ {room:'ch2',t:'Porte (bloc-porte classique)',d:'Laqué blanc, poignée laiton brossé.',s:'todo',p:'m'},
+ {room:'ch2',t:"Salle d'eau : faïence + robinetterie encastrée",d:'',s:'todo',p:'m'},
+ {room:'ch2',t:'WC suspendu sur bâti-support',d:'',s:'todo',p:'b'},
+ {room:'ch3',t:'Placards + porte (bloc-porte classique)',d:'Laqué blanc, poignée laiton brossé.',s:'todo',p:'m'},
+ {room:'ch3',t:'Parquet + plinthes',d:'',s:'todo',p:'m'},
+ {room:'ch3',t:'Élec : prises + RJ45 tête de lit',d:'',s:'todo',p:'m'},
+ {room:'buand',t:'Buanderie : arrivée + évac lave-linge, VMC',d:'',s:'todo',p:'m'},
+ {room:'mezz',t:'Escalier double hauteur métal + bois',d:'Fige la trémie — à caler avec Fotso avant fermeture.',s:'prog',p:'h'},
+ {room:'mezz',t:'2 portes dérobées intégrées au dressing',d:'Poignée laiton discrète.',s:'todo',p:'m'},
+ {room:'ch7',t:'Parquet chêne (raccord point de Hongrie)',d:'',s:'todo',p:'h'},
+ {room:'ch7',t:'Dressing : façade à décider',d:'Les 2 portes dérobées copieront cette façade.',s:'todo',p:'b'},
+ {room:'sdb8',t:'Faïence + douche italienne + double vasque',d:'Choisir faïence, receveur/pente, robinetterie.',s:'todo',p:'m'},
+ {room:'general',t:'Devis SLK détaillé par lot (quantités × PU)',d:'Base pour arbitrer poste par poste.',s:'todo',p:'h'},
+ {room:'general',t:'Corriger les lignes « portes » du devis',d:'1 galandage (pas 4), 4 battantes, 2 dérobées, vantaux inclus.',s:'prog',p:'h'},
+ {room:'general',t:'Clim : emplacement unité extérieure (copro)',d:'',s:'todo',p:'h'},
+ {room:'general',t:'Plan électrique + domotique global',d:'À figer avant fermeture des murs.',s:'todo',p:'h'}
+];
+var SEED_NOTES=[{room:'ch7',text:'Idée : niche à éclairage indirect derrière la tête de lit.'}];
+var LOTS={1:'Protection',2:'Dépose / démolition',3:'Menuiserie',4:'Électricité',5:'Plomberie',6:'Peinture',7:'Revêtement sol / mur',8:'Maçonnerie',9:'Nettoyage'};
+var DEVIS=[
+ {lot:1,num:'1.1',label:"Protection des zones d'intervention",qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.1',label:'Dépose de la cuisine existante',qty:1,pu:400,u:'ens',sd:'done'},
+ {lot:2,num:'2.2',label:'Dépose salle de bain existante',qty:1,pu:400,u:'ens',sd:'done'},
+ {lot:2,num:'2.3',label:'Dépose salle de bain existante',qty:1,pu:300,u:'ens',sd:'done'},
+ {lot:2,num:'2.4',label:'Dépose salle de bain existante',qty:1,pu:300,u:'ens',sd:'done'},
+ {lot:2,num:'2.5',label:'Dépose salle de bain existante',qty:1,pu:300,u:'ens',sd:'done'},
+ {lot:2,num:'2.6',label:"Dépose des parquets (tout l'appartement)",qty:1,pu:600,u:'ens',sd:'done'},
+ {lot:2,num:'2.7',label:'Dépose pompe à chaleur + circuits',qty:1,pu:600,u:'ens',sd:'done'},
+ {lot:2,num:'2.8',label:'Dépose des placards (salon, SàM…)',qty:1,pu:600,u:'ens',sd:'done'},
+ {lot:2,num:'2.9',label:"Dépose de l'installation électrique",qty:1,pu:600,u:'ens',sd:'done'},
+ {lot:2,num:'2.10',label:'Démolitions/déposes plafonds salon & SàM',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.11',label:'Démolition mur couloir / salle de bain',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.12',label:'Démolition mur cuisine / couloir',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.13',label:'Démolition mur chambre / chambre',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.14',label:'Démolition mur semi-porteur cuisine / cage',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.15',label:'Démolition mur semi-porteur salon / SàM',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.16',label:'Démolition mur semi-porteur salon',qty:1,pu:450,u:'ens',sd:'done'},
+ {lot:2,num:'2.17',label:'Démolition mur chambre / salle de bain',qty:1,pu:250,u:'ens',sd:'done'},
+ {lot:2,num:'2.18',label:"Dépose de l'escalier mezzanine",qty:1,pu:150,u:'ens',sd:'done'},
+ {lot:2,num:'2.19',label:"Création d'une trémie d'escalier",qty:1,pu:1100,u:'ens',sd:'todo'},
+ {lot:2,num:'2.20',label:'Dépose estrade et placards mezzanine',qty:1,pu:250,u:'ens',sd:'done'},
+ {lot:2,num:'2.21',label:'Dépose placard couloir + mur',qty:1,pu:250,u:'ens',sd:'done'},
+ {lot:2,num:'2.22',label:'Dépose revêtements muraux / isolations',qty:1,pu:250,u:'ens',sd:'done'},
+ {lot:2,num:'2.23',label:'Dépose moquette grenier',qty:1,pu:250,u:'ens',sd:'done'},
+ {lot:2,num:'2.24',label:'Extraction déchets + déchetterie',qty:1,pu:1800,u:'ens',sd:'done'},
+ {lot:3,num:'3.1',label:'Cuisine Leroy Merlin (fournie + posée)',qty:1,pu:15000,u:'u',sd:'no'},
+ {lot:3,num:'3.2',label:'Placard aménagé',qty:4,pu:1200,u:'u',sd:'todo'},
+ {lot:3,num:'3.3',label:'Plinthes en médium',qty:150,pu:18,u:'ml',sd:'todo'},
+ {lot:4,num:'4.1',label:'PAC Air/Air gainable',qty:1,pu:23000,u:'u',sd:'todo'},
+ {lot:4,num:'4.2',label:'Spots encastrables',qty:40,pu:30,u:'u',sd:'todo'},
+ {lot:4,num:'4.3',label:'Tableau électrique',qty:1,pu:2200,u:'u',sd:'todo'},
+ {lot:4,num:'4.4',label:'Réseaux électriques (points)',qty:100,pu:95,u:'pt',sd:'todo'},
+ {lot:4,num:'4.5',label:'Appareillage électrique',qty:100,pu:35,u:'u',sd:'todo'},
+ {lot:5,num:'5.1',label:'Nouvelle installation plomberie (points)',qty:13,pu:350,u:'pt',sd:'todo'},
+ {lot:5,num:'5.2',label:'Receveur douche à carreler',qty:2,pu:850,u:'u',sd:'todo'},
+ {lot:5,num:'5.3',label:'Robinetterie de douche murale',qty:2,pu:450,u:'u',sd:'todo'},
+ {lot:5,num:'5.4',label:'Porte de douche battante',qty:2,pu:450,u:'u',sd:'todo'},
+ {lot:5,num:'5.5',label:'Baignoire 700 x 1700',qty:1,pu:750,u:'u',sd:'todo'},
+ {lot:5,num:'5.6',label:'Robinetterie de baignoire',qty:1,pu:350,u:'u',sd:'todo'},
+ {lot:5,num:'5.7',label:'Paroi de baignoire',qty:1,pu:350,u:'u',sd:'todo'},
+ {lot:5,num:'5.8',label:'Toilettes suspendues',qty:3,pu:850,u:'u',sd:'todo'},
+ {lot:5,num:'5.9',label:"Miroir SdB / salle d'eau",qty:4,pu:230,u:'u',sd:'todo'},
+ {lot:5,num:'5.10',label:'Mitigeur de lavabo',qty:4,pu:145,u:'u',sd:'todo'},
+ {lot:5,num:'5.11',label:'Vasque',qty:4,pu:230,u:'u',sd:'todo'},
+ {lot:5,num:'5.12',label:'Meuble vasque',qty:4,pu:700,u:'u',sd:'todo'},
+ {lot:6,num:'6.1',label:'Préparation murs & plafonds',qty:600,pu:8,u:'m²',sd:'todo'},
+ {lot:6,num:'6.2',label:"Deux couches d'enduit gros",qty:600,pu:14,u:'m²',sd:'todo'},
+ {lot:6,num:'6.3',label:'Finition acrylique',qty:600,pu:18,u:'m²',sd:'todo'},
+ {lot:6,num:'6.4',label:'Mise en peinture des boiseries',qty:1,pu:2000,u:'ens',sd:'todo'},
+ {lot:7,num:'7.1',label:'Parquet',qty:129,pu:130,u:'m²',sd:'todo'},
+ {lot:7,num:'7.2',label:'Carrelage murs',qty:55,pu:100,u:'m²',sd:'todo'},
+ {lot:7,num:'7.3',label:'Carrelage sol',qty:10,pu:100,u:'m²',sd:'todo'},
+ {lot:8,num:'8.1',label:'IPN 3 m + platine',qty:2,pu:2300,u:'u',sd:'todo'},
+ {lot:8,num:'8.2',label:'Cloison Placostil + isolation',qty:60,pu:90,u:'m²',sd:'todo'},
+ {lot:8,num:'8.3',label:'Faux plafond BA13 suspendu',qty:60,pu:80,u:'m²',sd:'todo'},
+ {lot:8,num:'8.4',label:'Cloisons BA13 + isolation',qty:150,pu:80,u:'m²',sd:'todo'},
+ {lot:8,num:'8.5',label:'Porte coulissante encastrable — à corriger',qty:4,pu:1250,u:'u',sd:'todo'},
+ {lot:8,num:'8.6',label:'Bâti de porte',qty:5,pu:440,u:'u',sd:'todo'},
+ {lot:8,num:'8.7',label:'Barreaux de fenêtre mezzanine',qty:1,pu:250,u:'u',sd:'todo'},
+ {lot:8,num:'8.8',label:'Pose escalier mezzanine + fermeture',qty:1,pu:2200,u:'ens',sd:'todo'},
+ {lot:8,num:'8.9',label:'Ragréage fibré mince',qty:139,pu:18,u:'m²',sd:'todo'},
+ {lot:9,num:'9.1',label:'Nettoyage en cours et fin de chantier',qty:1,pu:550,u:'ens',sd:'todo'}
+];
+var CHECK=[{"cat": "1 · Sols", "id": "c1", "poste": "Parquet", "detail": "Essence, format, motif (droit/point de Hongrie/chevron), finition, teinte, sens de pose", "prio": "Haute"}, {"cat": "1 · Sols", "id": "c2", "poste": "Carrelage / grès cérame", "detail": "Format, teinte, effet, rectifié, calepinage", "prio": "Haute"}, {"cat": "1 · Sols", "id": "c3", "poste": "Pierre naturelle / marbre", "detail": "Type, finition, traitement", "prio": "Moyenne"}, {"cat": "1 · Sols", "id": "c4", "poste": "Béton ciré / résine", "detail": "Teinte, finition, zones", "prio": "Basse"}, {"cat": "1 · Sols", "id": "c5", "poste": "Sol souple / vinyle", "detail": "Décor, classe d'usage", "prio": "Basse"}, {"cat": "1 · Sols", "id": "c6", "poste": "Plinthes", "detail": "Matériau, hauteur, profil, finition", "prio": "Moyenne"}, {"cat": "1 · Sols", "id": "c7", "poste": "Barres de seuil / profilés", "detail": "Finition, type de transition", "prio": "Moyenne"}, {"cat": "1 · Sols", "id": "c8", "poste": "Tapis / surtapis", "detail": "Dimensions, matière", "prio": "Basse"}, {"cat": "2 · Murs & plafonds", "id": "c9", "poste": "Peinture murs", "detail": "Teintes par pièce, finition (mat/velours/satin)", "prio": "Haute"}, {"cat": "2 · Murs & plafonds", "id": "c10", "poste": "Peinture plafonds", "detail": "Blanc/teinté, finition", "prio": "Moyenne"}, {"cat": "2 · Murs & plafonds", "id": "c11", "poste": "Enduit décoratif", "detail": "Type (béton ciré/tadelakt/stuc/chaux), teintes", "prio": "Moyenne"}, {"cat": "2 · Murs & plafonds", "id": "c12", "poste": "Faïence / crédence murale", "detail": "Format, teinte, calepinage", "prio": "Haute"}, {"cat": "2 · Murs & plafonds", "id": "c13", "poste": "Papier peint / panoramique", "detail": "Motif, mur d'accent", "prio": "Basse"}, {"cat": "2 · Murs & plafonds", "id": "c14", "poste": "Moulures / corniches / rosaces", "detail": "Profil, style", "prio": "Basse"}, {"cat": "2 · Murs & plafonds", "id": "c15", "poste": "Lambris / boiseries / soubassement", "detail": "Style, finition", "prio": "Basse"}, {"cat": "2 · Murs & plafonds", "id": "c16", "poste": "Plaquettes de parement / pierre", "detail": "Type, mur d'accent", "prio": "Basse"}, {"cat": "2 · Murs & plafonds", "id": "c17", "poste": "Tasseaux / claustra", "detail": "Essence, séparation", "prio": "Basse"}, {"cat": "3 · Menuiseries extérieures", "id": "c18", "poste": "Fenêtres", "detail": "Matériau, vitrage, coloris int/ext, type d'ouverture", "prio": "Haute"}, {"cat": "3 · Menuiseries extérieures", "id": "c19", "poste": "Portes-fenêtres / baies", "detail": "Matériau, vitrage, seuil PMR", "prio": "Haute"}, {"cat": "3 · Menuiseries extérieures", "id": "c20", "poste": "Velux / fenêtres de toit", "detail": "Dimensions, vitrage, store intégré", "prio": "Moyenne"}, {"cat": "3 · Menuiseries extérieures", "id": "c21", "poste": "Volets / stores extérieurs", "detail": "Type, motorisation, coloris", "prio": "Moyenne"}, {"cat": "3 · Menuiseries extérieures", "id": "c22", "poste": "Poignées de fenêtre", "detail": "Finition, modèle", "prio": "Basse"}, {"cat": "3 · Menuiseries extérieures", "id": "c23", "poste": "Appuis / tablettes", "detail": "Matériau, débord", "prio": "Basse"}, {"cat": "3 · Menuiseries extérieures", "id": "c24", "poste": "Grilles de défense", "detail": "Style, sécurité", "prio": "Basse"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c25", "poste": "Portes intérieures", "detail": "Style, finition, hauteur", "prio": "Haute"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c26", "poste": "Galandage / coulissantes", "detail": "Système, finition", "prio": "Moyenne"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c27", "poste": "Portes dérobées / invisibles", "detail": "Bâti spécial, finition", "prio": "Moyenne"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c28", "poste": "Poignées / serrures / paumelles", "detail": "Finition (laiton/noir/inox)", "prio": "Moyenne"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c29", "poste": "Butées de porte", "detail": "Finition, type", "prio": "Basse"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c30", "poste": "Escalier", "detail": "Structure, marches, garde-corps, main courante", "prio": "Haute"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c31", "poste": "Dressing / placards", "detail": "Façades, aménagement, éclairage", "prio": "Haute"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c32", "poste": "Bibliothèque / sur mesure", "detail": "Matériau, dimensions", "prio": "Moyenne"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c33", "poste": "Verrière intérieure", "detail": "Dimensions, profilés, vitrage", "prio": "Basse"}, {"cat": "4 · Menuiseries intérieures & agencement", "id": "c34", "poste": "Trappe de visite / combles", "detail": "Finition", "prio": "Basse"}, {"cat": "5 · Cuisine", "id": "c35", "poste": "Meubles (caissons + façades)", "detail": "Finition, poignées/gorges", "prio": "Haute"}, {"cat": "5 · Cuisine", "id": "c36", "poste": "Plan de travail", "detail": "Matériau, épaisseur, chants", "prio": "Haute"}, {"cat": "5 · Cuisine", "id": "c37", "poste": "Crédence", "detail": "Matériau, hauteur", "prio": "Haute"}, {"cat": "5 · Cuisine", "id": "c38", "poste": "Évier", "detail": "Matériau, nombre de bacs", "prio": "Moyenne"}, {"cat": "5 · Cuisine", "id": "c39", "poste": "Robinetterie cuisine", "detail": "Mitigeur, douchette, eau filtrée/bouillante", "prio": "Moyenne"}, {"cat": "5 · Cuisine", "id": "c40", "poste": "Électroménager", "detail": "Four, induction, hotte, LV, frigo, micro-ondes, cave à vin", "prio": "Haute"}, {"cat": "5 · Cuisine", "id": "c41", "poste": "Îlot / table", "detail": "Dimensions, snack, prises", "prio": "Moyenne"}, {"cat": "5 · Cuisine", "id": "c42", "poste": "Éclairage sous-meubles", "detail": "Ruban / spots", "prio": "Basse"}, {"cat": "5 · Cuisine", "id": "c43", "poste": "Poubelle tri + accessoires", "detail": "Système intégré", "prio": "Basse"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c44", "poste": "Meuble vasque + vasque(s)", "detail": "Simple/double, matériau, style", "prio": "Haute"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c45", "poste": "Robinetterie lavabo", "detail": "Mitigeur, coloris", "prio": "Moyenne"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c46", "poste": "Miroir / armoire de toilette", "detail": "LED, anti-buée, rangement", "prio": "Moyenne"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c47", "poste": "Douche à l'italienne", "detail": "Receveur/caniveau, paroi, robinetterie, ciel de pluie", "prio": "Haute"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c48", "poste": "Baignoire", "detail": "Type, tablier, robinetterie", "prio": "Moyenne"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c49", "poste": "WC", "detail": "Suspendu/posé, bâti, plaque, abattant", "prio": "Haute"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c50", "poste": "Sèche-serviettes", "detail": "Électrique/mixte, coloris, dimensions", "prio": "Moyenne"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c51", "poste": "Faïence + carrelage sol", "detail": "Format, teinte, calepinage", "prio": "Haute"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c52", "poste": "Accessoires", "detail": "Barre, porte-serviettes, patères, tablette", "prio": "Basse"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c53", "poste": "Niche de douche", "detail": "Dimensions, éclairage", "prio": "Basse"}, {"cat": "6 · Salles de bain / d'eau / WC", "id": "c54", "poste": "Éclairage étanche (IP)", "detail": "Spots / applique / miroir", "prio": "Moyenne"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c55", "poste": "Émetteurs de chauffage", "detail": "Radiateurs / plancher chauffant / clim réversible", "prio": "Haute"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c56", "poste": "Climatisation gainable", "detail": "Zones, bouches design, régulation", "prio": "Haute"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c57", "poste": "Radiateurs déco", "detail": "Style, coloris", "prio": "Basse"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c58", "poste": "Thermostats / commandes", "detail": "Modèle, connecté", "prio": "Moyenne"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c59", "poste": "Production ECS", "detail": "Ballon / thermodynamique", "prio": "Moyenne"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c60", "poste": "VMC", "detail": "Simple/double flux, bouches", "prio": "Moyenne"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c61", "poste": "Poêle / cheminée", "detail": "Type, conduit", "prio": "Basse"}, {"cat": "7 · Chauffage / clim / eau chaude", "id": "c62", "poste": "Habillage unité extérieure", "detail": "Coffrage acoustique, emplacement", "prio": "Moyenne"}, {"cat": "8 · Électricité (courant fort)", "id": "c63", "poste": "Tableau électrique", "detail": "Dimensionnement, emplacement", "prio": "Haute"}, {"cat": "8 · Électricité (courant fort)", "id": "c64", "poste": "Interrupteurs / prises", "detail": "Finition, coloris, matière", "prio": "Haute"}, {"cat": "8 · Électricité (courant fort)", "id": "c65", "poste": "Prises spéciales", "detail": "Plan de travail, USB, escamotables", "prio": "Moyenne"}, {"cat": "8 · Électricité (courant fort)", "id": "c66", "poste": "Variateurs / va-et-vient", "detail": "Emplacements, modèles", "prio": "Moyenne"}, {"cat": "8 · Électricité (courant fort)", "id": "c67", "poste": "Sonnette / interphone / visiophone", "detail": "Modèle, connecté", "prio": "Moyenne"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c68", "poste": "Spots encastrés", "detail": "Fixes/orientables, T° couleur, dimmables", "prio": "Haute"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c69", "poste": "Rubans LED / indirect", "detail": "Corniches, niches, sous-meubles, tête de lit", "prio": "Moyenne"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c70", "poste": "Suspensions / lustres", "detail": "Séjour, SàM, îlot cuisine", "prio": "Moyenne"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c71", "poste": "Appliques murales", "detail": "Couloir, chambre, SdB, tête de lit", "prio": "Moyenne"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c72", "poste": "Lampadaires / liseuses", "detail": "Style, emplacements", "prio": "Basse"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c73", "poste": "Lampes à poser", "detail": "Style, emplacements", "prio": "Basse"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c74", "poste": "Détecteurs de présence", "detail": "Couloir, dressing, WC", "prio": "Basse"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c75", "poste": "Éclairage extérieur / balcon", "detail": "Appliques, spots", "prio": "Basse"}, {"cat": "9 · Éclairage (déco + technique)", "id": "c76", "poste": "Scénarios / DALI / circadien", "detail": "Programmation", "prio": "Basse"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c77", "poste": "Box domotique", "detail": "Écosystème, intégrations", "prio": "Moyenne"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c78", "poste": "Interrupteurs/volets/thermostats connectés", "detail": "Marques, périmètre", "prio": "Moyenne"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c79", "poste": "Pré-câblage RJ45/fibre/baie", "detail": "Emplacements, baie de brassage", "prio": "Haute"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c80", "poste": "Wi-Fi maillé", "detail": "Emplacements bornes", "prio": "Moyenne"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c81", "poste": "TV", "detail": "Emplacements, supports, câblage caché", "prio": "Moyenne"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c82", "poste": "Audio multiroom", "detail": "Pièces, marque", "prio": "Basse"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c83", "poste": "Home cinéma / vidéoprojecteur", "detail": "Écran, câblage", "prio": "Basse"}, {"cat": "10 · Domotique / multimédia / réseau", "id": "c84", "poste": "Assistant vocal", "detail": "Écosystème", "prio": "Basse"}, {"cat": "11 · Sécurité", "id": "c85", "poste": "Détecteurs de fumée (DAAF)", "detail": "Obligatoire, emplacements", "prio": "Haute"}, {"cat": "11 · Sécurité", "id": "c86", "poste": "Alarme", "detail": "Centrale, détecteurs, télésurveillance", "prio": "Moyenne"}, {"cat": "11 · Sécurité", "id": "c87", "poste": "Caméras / vidéosurveillance", "detail": "Emplacements", "prio": "Basse"}, {"cat": "11 · Sécurité", "id": "c88", "poste": "Serrure connectée / accès", "detail": "Modèle", "prio": "Basse"}, {"cat": "11 · Sécurité", "id": "c89", "poste": "Détecteur CO", "detail": "Si gaz / combustion", "prio": "Moyenne"}, {"cat": "12 · Plomberie (visibles / techniques)", "id": "c90", "poste": "Adoucisseur d'eau", "detail": "Si eau dure", "prio": "Basse"}, {"cat": "12 · Plomberie (visibles / techniques)", "id": "c91", "poste": "Arrivées / évac lave-linge & LV", "detail": "Emplacements", "prio": "Moyenne"}, {"cat": "12 · Plomberie (visibles / techniques)", "id": "c92", "poste": "Robinets d'arrêt / nourrice", "detail": "Accessibilité", "prio": "Basse"}, {"cat": "12 · Plomberie (visibles / techniques)", "id": "c93", "poste": "Siphons / bondes design", "detail": "Finition", "prio": "Basse"}, {"cat": "13 · Isolation / acoustique / confort", "id": "c94", "poste": "Isolation thermique murs/toiture", "detail": "Type, épaisseur", "prio": "Haute"}, {"cat": "13 · Isolation / acoustique / confort", "id": "c95", "poste": "Isolation phonique cloisons/plancher", "detail": "Type, performance", "prio": "Haute"}, {"cat": "13 · Isolation / acoustique / confort", "id": "c96", "poste": "Traitement acoustique déco", "detail": "Type, esthétique", "prio": "Basse"}, {"cat": "13 · Isolation / acoustique / confort", "id": "c97", "poste": "Étanchéité à l'air", "detail": "Membranes, joints", "prio": "Moyenne"}, {"cat": "14 · Rangements spécifiques", "id": "c98", "poste": "Dressing détaillé", "detail": "Penderies, tiroirs, éclairage", "prio": "Haute"}, {"cat": "14 · Rangements spécifiques", "id": "c99", "poste": "Placard d'entrée / vestiaire", "detail": "Aménagement, façade", "prio": "Moyenne"}, {"cat": "14 · Rangements spécifiques", "id": "c100", "poste": "Buanderie", "detail": "Meubles, étagères, bac, sèche-linge", "prio": "Moyenne"}, {"cat": "14 · Rangements spécifiques", "id": "c101", "poste": "Cellier / garde-manger", "detail": "Étagères", "prio": "Basse"}, {"cat": "14 · Rangements spécifiques", "id": "c102", "poste": "Bureau intégré", "detail": "Plan, rangements, prises", "prio": "Basse"}, {"cat": "15 · Décoration & textiles", "id": "c103", "poste": "Palette de couleurs / harmonie", "detail": "Ambiance, nuancier, matériaux nobles", "prio": "Haute"}, {"cat": "15 · Décoration & textiles", "id": "c104", "poste": "Rideaux / voilages + tringles", "detail": "Tissu, rails, occultation", "prio": "Moyenne"}, {"cat": "15 · Décoration & textiles", "id": "c105", "poste": "Stores intérieurs", "detail": "Bateau/vénitien/occultant", "prio": "Moyenne"}, {"cat": "15 · Décoration & textiles", "id": "c106", "poste": "Tapis", "detail": "Dimensions, matière", "prio": "Basse"}, {"cat": "15 · Décoration & textiles", "id": "c107", "poste": "Miroirs déco", "detail": "Format, cadre", "prio": "Basse"}, {"cat": "15 · Décoration & textiles", "id": "c108", "poste": "Objets déco / patères", "detail": "Style, finition", "prio": "Basse"}, {"cat": "16 · Mobilier sur mesure / intégré", "id": "c109", "poste": "Tête de lit sur mesure", "detail": "Matériau, éclairage", "prio": "Basse"}, {"cat": "16 · Mobilier sur mesure / intégré", "id": "c110", "poste": "Meuble TV", "detail": "Matériau, dimensions", "prio": "Basse"}, {"cat": "16 · Mobilier sur mesure / intégré", "id": "c111", "poste": "Banquette / assise intégrée", "detail": "Emplacement, coffre", "prio": "Basse"}, {"cat": "16 · Mobilier sur mesure / intégré", "id": "c112", "poste": "Table & chaises SàM", "detail": "Style, dimensions", "prio": "Basse"}, {"cat": "17 · Extérieurs (balcon / terrasse)", "id": "c113", "poste": "Sol extérieur", "detail": "Dalles / bois composite", "prio": "Basse"}, {"cat": "17 · Extérieurs (balcon / terrasse)", "id": "c114", "poste": "Garde-corps", "detail": "Matériau, style", "prio": "Moyenne"}, {"cat": "17 · Extérieurs (balcon / terrasse)", "id": "c115", "poste": "Éclairage extérieur", "detail": "Appliques, spots, bornes", "prio": "Basse"}, {"cat": "17 · Extérieurs (balcon / terrasse)", "id": "c116", "poste": "Point d'eau / prise extérieure", "detail": "Emplacement", "prio": "Basse"}, {"cat": "17 · Extérieurs (balcon / terrasse)", "id": "c117", "poste": "Store banne / pergola", "detail": "Motorisation, dimensions", "prio": "Basse"}, {"cat": "17 · Extérieurs (balcon / terrasse)", "id": "c118", "poste": "Mobilier / jardinières", "detail": "Style, matériau", "prio": "Basse"}, {"cat": "18 · Divers à ne pas oublier", "id": "c119", "poste": "Boîte aux lettres / plaque / numéro", "detail": "Modèle, finition", "prio": "Basse"}, {"cat": "18 · Divers à ne pas oublier", "id": "c120", "poste": "Habillage / coffrage des gaines", "detail": "Finition, emplacements", "prio": "Moyenne"}, {"cat": "18 · Divers à ne pas oublier", "id": "c121", "poste": "Trappes de visite techniques", "detail": "Finition", "prio": "Basse"}, {"cat": "18 · Divers à ne pas oublier", "id": "c122", "poste": "Aspiration centralisée", "detail": "Si souhaité", "prio": "Basse"}, {"cat": "18 · Divers à ne pas oublier", "id": "c123", "poste": "Local technique / compteurs", "detail": "Accès, habillage", "prio": "Basse"}, {"cat": "18 · Divers à ne pas oublier", "id": "c124", "poste": "Grilles de ventilation / signalétique", "detail": "Grilles, plaques de porte", "prio": "Basse"}];var CKORD=['todo','prog','done','na'];var CKL={todo:{c:'ck-todo',l:'À choisir'},prog:{c:'ck-prog',l:'En cours'},done:{c:'ck-done',l:'Choisi'},na:{c:'ck-na',l:'Sans objet'}};var STORD=['todo','prog','done','ok'];
+var STL={todo:{c:'st-todo',l:'À faire'},prog:{c:'st-prog',l:'En cours'},done:{c:'st-done',l:'Fait'},ok:{c:'st-ok',l:'Validé'}};
+var DVORD=['todo','done','no'];
+var DVL={todo:{c:'dv-todo',l:'Reste à faire'},done:{c:'dv-done',l:'Fait'},no:{c:'dv-no',l:'Ne se fera pas'}};
+var DEF={};ROOMS.forEach(function(r){DEF['room:'+r.id]={x:r.x,y:r.y,w:r.w,h:r.h};});ELEMS.forEach(function(e){DEF[e.cat+':'+e.id]={x:e.x,y:e.y,w:e.w,h:e.h};});
+var DEVIS_INIT=DEVIS.reduce(function(a,d){return a+d.qty*d.pu;},0);
+var db,cur=null,curFix=null,curEl=null,editMode=false,drag=null;var showHiddenCheck=false;var stagedFx=null,stagedPc=null;var READONLY=(typeof window!=='undefined'&&window.READONLY)||false;var ROLE=(typeof window!=='undefined'&&window.ROLE)||(READONLY?'Entrepreneur':'Propriétaire');
+function load(){if(typeof window!=='undefined'&&window.PRESET_DB){var pd=window.PRESET_DB;pd.fix=pd.fix||{};pd.el=pd.el||{};pd.geom=pd.geom||{};pd.customRooms=pd.customRooms||[];pd.qty=pd.qty||{};pd.customFix=pd.customFix||{};pd.hiddenFix=pd.hiddenFix||{};pd.fixPos=pd.fixPos||{};pd.check=pd.check||{};pd.devis=pd.devis||{};pd.tasks=pd.tasks||[];pd.notes=pd.notes||[];return pd;}var d;try{d=JSON.parse(localStorage.getItem(STK));}catch(e){}
+ if(!d)d={tasks:SEED_TASKS.map(function(x,i){x.id='s'+i;return x;}),notes:SEED_NOTES.map(function(x,i){x.id='n'+i;x.date=today();return x;})};
+ if(!d.devis){d.devis={};DEVIS.forEach(function(x){d.devis[x.num]=x.sd;});}
+ if(!d.fix)d.fix={};if(!d.el)d.el={};if(!d.geom)d.geom={};if(!d.customRooms)d.customRooms=[];if(!d.qty)d.qty={};if(!d.customFix)d.customFix={};if(!d.hiddenFix)d.hiddenFix={};if(!d.fixPos)d.fixPos={};if(!d.check)d.check={};if(!d.checkHidden)d.checkHidden={};if(!d.log)d.log=[];
+ return d;}
+function save(){if(READONLY)return;try{localStorage.setItem(STK,JSON.stringify(db));}catch(e){}}
+function rebuildCustomDef(){db.customRooms.forEach(function(c){DEF['room:'+c.id]={x:c.x,y:c.y,w:c.w,h:c.h};});}
+function uid(){return 'x'+Date.now()+Math.floor(Math.random()*999);}
+function today(){return new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});}
+function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function fmt(n){return Math.round(n).toLocaleString('fr-FR')+' €';}
+function rTasks(id){return db.tasks.filter(function(x){return x.room==id;});}
+function openCount(id){return rTasks(id).filter(function(x){return x.s=='todo'||x.s=='prog';}).length;}
+function fixData(room,id){return (db.fix[room]&&db.fix[room][id])||null;}
+function getFixList(id){var hid=(db.hiddenFix&&db.hiddenFix[id])||[];return (FIX[id]||[]).concat((db.customFix&&db.customFix[id])||[]).filter(function(f){return hid.indexOf(f.id)<0;});}
+function boxOf(key){return db.geom[key]||DEF[key];}
+function effQty(d){return (db.qty&&db.qty[d.num]!=null)?db.qty[d.num]:d.qty;}
+function effHt(d){return effQty(d)*d.pu;}
+function allRooms(){return ROOMS.concat(db.customRooms.map(function(c,i){return {id:c.id,name:c.name,area:c.area||'',num:9+i,custom:true};}));}
+function getRoom(id){var r=ROOMS.filter(function(x){return x.id==id;})[0];if(r)return r;var a=allRooms();return a.filter(function(x){return x.id==id;})[0];}
+
+function initPlan(){document.getElementById('plan').innerHTML='<image href="'+curBg+'" xlink:href="'+curBg+'" x="0" y="0" width="2150" height="1521"/><g id="overlay"></g>';renderOverlay();renderDevis();renderMaterials();renderCheck();renderDocs();renderHistory();document.getElementById('roomsLegend').innerHTML=allRooms().map(function(r){return '<span><b>'+r.num+'</b> · '+esc(r.name)+'</span>';}).join('');}
+function handleSvg(b,key){return editMode?'<circle class="rz" data-handle="'+key+'" cx="'+(b.x+b.w)+'" cy="'+(b.y+b.h)+'" r="26" fill="#c9a24a" stroke="#fff" stroke-width="5" style="cursor:se-resize"/>':'';}
+function renderOverlay(){
+ var s='';var dash=editMode?' stroke-dasharray="16 10"':'';
+ allRooms().forEach(function(r){var key='room:'+r.id,b=boxOf(key);
+  var tot=rTasks(r.id).length,op=openCount(r.id),fill,stroke,bcol;
+  if(r.custom){fill='rgba(120,118,110,0.22)';stroke='rgba(90,88,82,0.6)';bcol='#8a887e';}
+  else{fill=tot==0?'rgba(120,118,110,0.05)':(op==0?'rgba(142,201,143,0.28)':'rgba(226,75,74,0.20)');stroke=tot==0?'rgba(120,118,110,0.4)':(op==0?'rgba(47,125,51,0.6)':'rgba(226,75,74,0.65)');bcol=tot==0?'#b7b5aa':(op==0?'#2f7d33':'#e24b4a');}
+  s+='<g class="hot" data-zone="'+key+'"><rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" rx="10" fill="'+fill+'" stroke="'+stroke+'" stroke-width="3"'+dash+'/>';
+  s+='<circle cx="'+(b.x+b.w-42)+'" cy="'+(b.y+42)+'" r="36" fill="'+bcol+'"/><text x="'+(b.x+b.w-42)+'" y="'+(b.y+55)+'" text-anchor="middle" style="font-size:40px;font-weight:700;fill:#fff">'+r.num+'</text>'+handleSvg(b,key)+'</g>';
+ });
+ ELEMS.forEach(function(e){var key=e.cat+':'+e.id,b=boxOf(key),has=db.el[key],def=has&&(has.url||has.doc);
+  if(e.cat=='window'){s+='<g class="hot" data-zone="'+key+'"><rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" rx="3" fill="#23221e" stroke="'+(def?'#c9a24a':'#23221e')+'" stroke-width="'+(def?5:2)+'"'+dash+'/>'+handleSvg(b,key)+'</g>';}
+  else{var st=ELSTYLE[e.cat]||ELSTYLE.placard;s+='<g class="hot" data-zone="'+key+'"><rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" rx="6" fill="'+st.fill+'" stroke="'+(def?'#c9a24a':st.stroke)+'" stroke-width="'+(def?5:3)+'"'+dash+'/><text x="'+(b.x+b.w/2)+'" y="'+(b.y+b.h/2+8)+'" text-anchor="middle" style="font-size:20px;font-weight:600;fill:'+st.tx+';paint-order:stroke;stroke:#fff;stroke-width:4px">'+esc(e.label)+'</text>'+handleSvg(b,key)+'</g>';}
+ });
+ document.getElementById('overlay').innerHTML=s;
+ var gc=document.getElementById('genCount'),op=openCount('general');gc.textContent=op;gc.className='gcount'+(op==0?' zero':'');
+}
+function allEquip(){var out=[];allRooms().forEach(function(r){getFixList(r.id).forEach(function(f){out.push({room:r.name,label:f.label,d:fixData(r.id,f.id)});});});ELEMS.forEach(function(e){out.push({room:'',label:e.label,d:db.el[e.cat+':'+e.id]});});return out;}function renderMaterials(){var arr=allEquip();var ch=arr.filter(function(x){return x.d&&(x.d.url||x.d.doc||x.d.name);});var td=arr.filter(function(x){return !(x.d&&(x.d.url||x.d.doc||x.d.name));});var sub=document.getElementById('matSub');if(sub)sub.textContent=ch.length+' choisis · '+td.length+' à choisir';var html='';if(ch.length){html+='<div class="matgrp"><h3 class="done">Choisis</h3>';ch.forEach(function(x){var d=x.d;html+='<div class="matrow"><div class="ml"><b>'+esc(x.label)+'</b>'+(x.room?' <span class="mr">'+esc(x.room)+'</span>':'')+(d.name?' — '+esc(d.name):'')+(d.quant?' · '+esc(d.quant):'')+'</div>'+(d.url?'<a class="mlink" href="'+esc(d.url)+'" target="_blank">lien</a>':(d.doc?'<span class="mlink">doc 📎</span>':''))+'</div>';});html+='</div>';}if(td.length){html+='<div class="matgrp"><h3 class="todo">À choisir</h3>';td.forEach(function(x){html+='<div class="matrow"><div class="ml">'+esc(x.label)+(x.room?' <span class="mr">'+esc(x.room)+'</span>':'')+'</div><span class="mtodo">à choisir</span></div>';});html+='</div>';}var mb=document.getElementById('matBody');if(mb)mb.innerHTML=html;}var DOCS=[];function renderDocs(){DOCS=[];var arr=allEquip(),html='';arr.forEach(function(x){var d=x.d;if(!d)return;if(d.doc){DOCS.push(x);var i=DOCS.length-1;html+='<div class="matrow"><div class="ml"><b>'+esc(x.label)+'</b>'+(x.room?' <span class="mr">'+esc(x.room)+'</span>':'')+(d.name?' — '+esc(d.name):'')+'</div><button class="mlink" data-docidx="'+i+'">Ouvrir 📎</button></div>';}else if(d.url){html+='<div class="matrow"><div class="ml"><b>'+esc(x.label)+'</b>'+(x.room?' <span class="mr">'+esc(x.room)+'</span>':'')+(d.name?' — '+esc(d.name):'')+'</div><a class="mlink" href="'+esc(d.url)+'" target="_blank">Ouvrir lien</a></div>';}});var sub=document.getElementById('docsSub');if(sub)sub.textContent=DOCS.length+' document(s) joint(s)';var b=document.getElementById('docsBody');if(b)b.innerHTML=html||'<div class="empty">Aucun document ni lien pour l instant.</div>';}function logAction(msg){try{if(typeof SYNC!=='undefined'&&SYNC)SYNC.pending=msg;db.log=db.log||[];db.log.push({t:Date.now(),who:ROLE,msg:msg});if(db.log.length>800)db.log=db.log.slice(-800);renderHistory();}catch(e){}}function renderHistory(){var log=(db&&db.log)||[];var sub=document.getElementById('histSub');if(sub)sub.textContent=log.length+' modification(s) enregistrée(s)';var html='';for(var i=log.length-1;i>=0;i--){var e=log[i];var dt=new Date(e.t);var ds=dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});html+='<div class="histrow"><span class="hw '+(e.who=='Entrepreneur'?'he':'hp')+'">'+esc(e.who)+'</span><span class="hm">'+esc(e.msg)+'</span><span class="ht">'+ds+'</span></div>';}var b=document.getElementById('histBody');if(b)b.innerHTML=html||'<div class="empty">Aucune modification enregistrée.</div>';}function renderCheck(){var tot={todo:0,prog:0,done:0,na:0},hid=0;CHECK.forEach(function(x){if(db.checkHidden[x.id]){hid++;return;}tot[db.check[x.id]||'todo']++;});var sub=document.getElementById('checkSub');if(sub)sub.textContent=tot.done+' choisis · '+tot.prog+' en cours · '+tot.todo+' à choisir · '+tot.na+' sans objet';var html='';if(hid>0){html+='<div style="margin:0 0 8px"><button class="morebtn" style="margin:0;display:inline-block" data-cktoggle="1">'+(showHiddenCheck?'Masquer les éléments retirés':('Afficher les '+hid+' éléments retirés'))+'</button></div>';}var cat=null;CHECK.forEach(function(x){var isH=!!db.checkHidden[x.id];if(isH&&!showHiddenCheck)return;if(x.cat!=cat){if(cat!==null)html+='</div>';html+='<div class="lot"><div class="loth"><span>'+esc(x.cat)+'</span></div>';cat=x.cat;}if(isH){html+='<div class="dvrow" style="opacity:.5"><div class="l"><span class="lbl">'+esc(x.poste)+'</span></div><button class="ckrestore" data-ckshow="'+x.id+'">Rétablir</button></div>';}else{var st=db.check[x.id]||'todo',cl=CKL[st];html+='<div class="dvrow"><button class="ckx" data-ckhide="'+x.id+'">&times;</button><div class="l"><span class="lbl">'+esc(x.poste)+'</span><span class="m">'+esc(x.detail)+'</span></div><span class="dvpill '+cl.c+'" data-ck="'+x.id+'">'+cl.l+'</span></div>';}});if(cat!==null)html+='</div>';var cb=document.getElementById('checkBody');if(cb)cb.innerHTML=html;}function renderDevis(){
+ var tot={todo:0,done:0,no:0},grand=0;
+ DEVIS.forEach(function(d){var h=effHt(d);grand+=h;tot[db.devis[d.num]||'todo']+=h;});
+ document.getElementById('devisSub').innerHTML='Devis initial <b>'+fmt(DEVIS_INIT)+'</b> HT · Total ajusté <b style="color:#23221e">'+fmt(grand)+'</b> HT';
+ document.getElementById('devisRecap').innerHTML='<span class="g">Fait <b>'+fmt(tot.done)+'</b></span><span class="a">Reste à faire <b>'+fmt(tot.todo)+'</b></span><span class="r">Abandonné <b>'+fmt(tot.no)+'</b></span>';
+ var html='',lot=null;
+ DEVIS.forEach(function(d){
+  if(d.lot!=lot){if(lot!==null)html+='</div>';var sub=DEVIS.filter(function(x){return x.lot==d.lot;}).reduce(function(a,x){return a+effHt(x);},0);html+='<div class="lot"><div class="loth"><span>'+d.lot+' · '+esc(LOTS[d.lot])+'</span><span class="lt">'+fmt(sub)+'</span></div>';lot=d.lot;}
+  var st=db.devis[d.num]||'todo',dl=DVL[st],q=effQty(d),h=effHt(d);
+  var money=d.qty>1?('<input class="qin" type="number" inputmode="numeric" min="0" data-q="'+d.num+'" value="'+q+'"> '+esc(d.u)+' × '+fmt(d.pu)+' = <b>'+fmt(h)+' HT</b>'):(fmt(h)+' HT');
+  html+='<div class="dvrow'+(st=='no'?' no':'')+'"><div class="l"><span class="lbl"><span class="n">'+d.num+'</span>'+esc(d.label)+'</span><span class="m">'+money+'</span></div><span class="dvpill '+dl.c+'" data-dv="'+d.num+'">'+dl.l+'</span></div>';
+ });
+ html+='</div>';document.getElementById('devisBody').innerHTML=html;
+}
+function toSvg(e){var svg=document.getElementById('plan'),r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*2150/r.width,y:(e.clientY-r.top)*1521/r.height};}
+document.getElementById('plan').addEventListener('pointerdown',function(e){
+ if(!editMode)return;var h=e.target.closest('[data-handle]'),z=e.target.closest('[data-zone]');var key,mode;
+ if(h){key=h.getAttribute('data-handle');mode='resize';}else if(z){key=z.getAttribute('data-zone');mode='move';}else return;
+ var p=toSvg(e),b=boxOf(key);drag={key:key,mode:mode,sx:p.x,sy:p.y,ox:b.x,oy:b.y,ow:b.w,oh:b.h};
+ try{e.target.setPointerCapture(e.pointerId);}catch(err){}e.preventDefault();
+});
+document.getElementById('plan').addEventListener('pointermove',function(e){
+ if(!drag)return;var p=toSvg(e),dx=p.x-drag.sx,dy=p.y-drag.sy;
+ if(drag.mode=='move')db.geom[drag.key]={x:Math.round(drag.ox+dx),y:Math.round(drag.oy+dy),w:drag.ow,h:drag.oh};
+ else db.geom[drag.key]={x:drag.ox,y:drag.oy,w:Math.max(40,Math.round(drag.ow+dx)),h:Math.max(16,Math.round(drag.oh+dy))};
+ renderOverlay();e.preventDefault();
+});
+function endDrag(){if(drag){drag=null;save();}}
+document.getElementById('plan').addEventListener('pointerup',endDrag);
+document.getElementById('plan').addEventListener('pointercancel',endDrag);
+
+function fixMarkers(id){var arr=getFixList(id),s='';arr.forEach(function(f){var has=fixData(id,f.id),col=has&&(has.url||has.doc)?'#c9a24a':'#8a887e';var pp=(db.fixPos[id]&&db.fixPos[id][f.id])||{x:f.x,y:f.y},px=pp.x,py=pp.y;s+='<g class="fixm" data-fix="'+f.id+'" style="cursor:pointer"><circle cx="'+px+'" cy="'+py+'" r="20" fill="'+col+'" stroke="#fff" stroke-width="4"/><text x="'+px+'" y="'+(py+42)+'" text-anchor="middle" style="font-size:22px;font-weight:600;fill:#23221e;paint-order:stroke;stroke:#fff;stroke-width:5px">'+esc(f.label)+'</text></g>';});return s;}
+function openRoom(id){
+ cur=id;curFix=null;document.getElementById('fixcard').classList.remove('open');
+ var r=getRoom(id);
+ document.getElementById('planView').style.display='none';document.getElementById('roomView').style.display='block';window.scrollTo(0,0);
+ var delBtn=document.getElementById('delRoomBtn');
+ if(r&&id!='general'){var b=boxOf('room:'+id);
+  document.getElementById('rvName').textContent=r.num+' · '+r.name;document.getElementById('rvArea').textContent=r.area?r.area:'';
+  delBtn.style.display=r.custom?'':'none';
+  var pad=Math.max(150,Math.round(Math.max(b.w,b.h)*0.45)),vx=Math.max(0,b.x-pad),vy=Math.max(0,b.y-pad),vw=b.w+pad*2,vh=b.h+pad*2;
+  var svg=document.getElementById('roomSvg');svg.setAttribute('viewBox',vx+' '+vy+' '+vw+' '+vh);
+  svg.innerHTML='<image href="'+curBg+'" xlink:href="'+curBg+'" x="0" y="0" width="2150" height="1521"/><rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" rx="10" fill="none" stroke="#23221e" stroke-width="4"/><g id="roomOverlay">'+fixMarkers(id)+'</g>';
+  svg.parentNode.style.display='';renderEquip(id);
+ }else{document.getElementById('rvName').textContent='Général / chantier';document.getElementById('rvArea').textContent='';delBtn.style.display='none';document.getElementById('roomSvg').parentNode.style.display='none';document.getElementById('equipSec').style.display='none';}
+ renderLists(id);
+}
+function renderEquip(id){var arr=getFixList(id);document.getElementById('equipSec').style.display='';var rows=arr.map(function(f){var has=fixData(id,f.id),ok=has&&(has.url||has.doc);return '<div class="eqrow" data-fix="'+f.id+'"><span class="en">'+esc(f.label)+(has&&has.name?' — '+esc(has.name):'')+'</span><span class="es '+(ok?'es-ok':'es-no')+'">'+(ok?'lien ✓':'à choisir')+'</span>'+'<button class="eqdel" data-delfix="'+f.id+'">&times;</button>'+'</div>';}).join('');if(!arr.length)rows='<div class="empty">Aucun équipement.</div>';document.getElementById('equipList').innerHTML=rows+'<button class="eqadd" data-addequip="1">+ Ajouter un équipement</button>';}
+function openFix(fixId){curFix=fixId;var f=getFixList(cur).filter(function(x){return x.id==fixId;})[0];if(!f)return;var d=fixData(cur,fixId)||{};document.getElementById('fxName').textContent=f.label;document.getElementById('fxProd').value=d.name||'';document.getElementById('fxUrl').value=d.url||'';document.getElementById('fxNote').value=d.note||'';document.getElementById('fxQuant').value=d.quant||'';document.getElementById('fxDim').value=d.dim||'';document.getElementById('fxRef').value=d.ref||'';document.getElementById('fxCol').value=d.col||'';stagedFx=d.doc||null;setDocUI('fx',stagedFx);document.getElementById('fixcard').classList.add('open');document.getElementById('fixcard').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function openEl(key){curEl=key;var e=ELEMS.filter(function(x){return x.cat+':'+x.id==key;})[0];if(!e)return;var d=db.el[key]||{};document.getElementById('pcName').textContent=e.label;document.getElementById('pcProd').value=d.name||'';document.getElementById('pcUrl').value=d.url||'';document.getElementById('pcNote').value=d.note||'';document.getElementById('pcQuant').value=d.quant||'';document.getElementById('pcDim').value=d.dim||'';document.getElementById('pcRef').value=d.ref||'';document.getElementById('pcCol').value=d.col||'';stagedPc=d.doc||null;setDocUI('pc',stagedPc);document.getElementById('planCard').classList.add('open');document.getElementById('planCard').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function renderLists(id){var tasks=rTasks(id);var todo=tasks.filter(function(x){return x.s=='todo'||x.s=='prog';});var done=tasks.filter(function(x){return x.s=='done'||x.s=='ok';});
+ document.getElementById('secTodo').innerHTML=todo.length?todo.map(itemHTML).join(''):'<div class="empty">Rien à faire ici.</div>';
+ document.getElementById('secDone').innerHTML=done.length?done.map(itemHTML).join(''):'<div class="empty">Rien de terminé encore.</div>';
+ var notes=db.notes.filter(function(n){return n.room==id;});
+ document.getElementById('secNote').innerHTML=notes.length?notes.map(function(n){return '<div class="note"><button class="del" data-delnote="'+n.id+'">&times;</button>'+esc(n.text)+'<span class="dt">'+(n.date||'')+'</span></div>';}).join(''):'<div class="empty">Aucune note.</div>';}
+function itemHTML(x){var st=STL[x.s];return '<div class="item'+((x.s=='done'||x.s=='ok')?' is-done':'')+'"><button class="del" data-del="'+x.id+'">&times;</button><p class="t">'+esc(x.t)+'</p>'+(x.d?'<p class="d">'+esc(x.d)+'</p>':'')+'<div class="meta"><span class="pill '+st.c+'" data-st="'+x.id+'">'+st.l+'</span></div></div>';}
+
+document.getElementById('plan').addEventListener('click',function(e){
+ if(editMode)return;var el=e.target.closest('[data-zone]');if(!el)return;var key=el.getAttribute('data-zone');
+ if(key.indexOf('room:')==0)openRoom(key.slice(5));else openEl(key);
+});
+function renderRoomMarkers(){var o=document.getElementById('roomOverlay');if(o)o.innerHTML=fixMarkers(cur);}var fdrag=null;function toSvgRoom(e){var svg=document.getElementById('roomSvg'),r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;return{x:vb.x+(e.clientX-r.left)*vb.width/r.width,y:vb.y+(e.clientY-r.top)*vb.height/r.height};}document.getElementById('roomSvg').addEventListener('pointerdown',function(e){var g=e.target.closest('[data-fix]');if(!g)return;var id=g.getAttribute('data-fix');var f=getFixList(cur).filter(function(x){return x.id==id;})[0];if(!f)return;var pp=(db.fixPos[cur]&&db.fixPos[cur][id])||{x:f.x,y:f.y};var pt=toSvgRoom(e);fdrag={id:id,sx:pt.x,sy:pt.y,ox:pp.x,oy:pp.y,moved:false};try{document.getElementById('roomSvg').setPointerCapture(e.pointerId);}catch(err){}e.preventDefault();});document.getElementById('roomSvg').addEventListener('pointermove',function(e){if(!fdrag)return;if(READONLY)return;var pt=toSvgRoom(e),dx=pt.x-fdrag.sx,dy=pt.y-fdrag.sy;if(Math.abs(dx)>6||Math.abs(dy)>6)fdrag.moved=true;db.fixPos[cur]=db.fixPos[cur]||{};var np={x:Math.round(fdrag.ox+dx),y:Math.round(fdrag.oy+dy)};db.fixPos[cur][fdrag.id]=np;var gg=document.querySelector('#roomOverlay [data-fix="'+fdrag.id+'"]');if(gg){var cc=gg.querySelector('circle'),tt=gg.querySelector('text');cc.setAttribute('cx',np.x);cc.setAttribute('cy',np.y);tt.setAttribute('x',np.x);tt.setAttribute('y',np.y+42);}e.preventDefault();});document.getElementById('roomSvg').addEventListener('pointerup',function(e){if(!fdrag)return;var id=fdrag.id,moved=fdrag.moved;fdrag=null;if(moved){renderRoomMarkers();save();}else{openFix(id);}});document.getElementById('roomSvg').addEventListener('pointercancel',function(){fdrag=null;});
+document.getElementById('equipList').addEventListener('click',function(e){if(e.target&&e.target.dataset&&e.target.dataset.addequip!=null){addEquip();return;}var d=e.target.closest&&e.target.closest('[data-delfix]');if(d){delEquip(d.getAttribute('data-delfix'));return;}var g=e.target.closest('[data-fix]');if(g)openFix(g.getAttribute('data-fix'));});function roomBgSvg(id){var b=boxOf('room:'+id);return '<image href="'+curBg+'" xlink:href="'+curBg+'" x="0" y="0" width="2150" height="1521"/><rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" rx="10" fill="none" stroke="#23221e" stroke-width="4"/>'+fixMarkers(id);}function addEquip(){if(READONLY)return;var name=prompt('Nom de l\'équipement ?');if(!name)return;db.customFix[cur]=db.customFix[cur]||[];var b=boxOf('room:'+cur),nn=db.customFix[cur].length;var fx={id:'f'+uid(),label:name,x:Math.round(b.x+b.w/2)+nn*45,y:Math.round(b.y+b.h/2)+nn*25,custom:true};db.customFix[cur].push(fx);logAction('Équipement ajouté : '+name);save();renderRoomMarkers();renderEquip(cur);openFix(fx.id);}function delEquip(fid){if(READONLY)return;if(!confirm('Supprimer cet équipement ?'))return;var isc=(db.customFix[cur]||[]).some(function(f){return f.id==fid;});if(isc){db.customFix[cur]=(db.customFix[cur]||[]).filter(function(f){return f.id!=fid;});}else{db.hiddenFix[cur]=db.hiddenFix[cur]||[];if(db.hiddenFix[cur].indexOf(fid)<0)db.hiddenFix[cur].push(fid);}if(db.fix[cur])delete db.fix[cur][fid];logAction('Équipement retiré');save();renderRoomMarkers();renderEquip(cur);}
+function saveFiche(store,key,pfx,card){var doc=(pfx=='fx')?stagedFx:stagedPc;var obj={name:document.getElementById(pfx+'Prod').value.trim(),url:document.getElementById(pfx+'Url').value.trim(),note:document.getElementById(pfx+'Note').value.trim(),quant:document.getElementById(pfx+'Quant').value.trim(),dim:document.getElementById(pfx+'Dim').value.trim(),ref:document.getElementById(pfx+'Ref').value.trim(),col:document.getElementById(pfx+'Col').value.trim()};if(doc)obj.doc=doc;var prev=store[key];store[key]=obj;logAction('Fiche modifiée : '+key);if(!trySave()){if(obj.doc){delete obj.doc;if(trySave()){alert('Document trop lourd pour être enregistré localement (limite du navigateur). Le reste est sauvegardé — pour un gros fichier, préfère un lien.');}else{store[key]=prev;trySave();alert('Mémoire pleine : enregistrement impossible.');}}}document.getElementById(card).classList.remove('open');try{renderMaterials();renderDocs();}catch(e){}}
+document.getElementById('fxSave').addEventListener('click',function(){if(!curFix)return;db.fix[cur]=db.fix[cur]||{};saveFiche(db.fix[cur],curFix,'fx','fixcard');renderRoomMarkers();renderEquip(cur);});
+document.getElementById('pcSave').addEventListener('click',function(){if(!curEl)return;saveFiche(db.el,curEl,'pc','planCard');renderOverlay();});
+document.getElementById('fxOpen').addEventListener('click',function(){openUrl(document.getElementById('fxUrl').value.trim());});
+document.getElementById('pcOpen').addEventListener('click',function(){openUrl(document.getElementById('pcUrl').value.trim());});
+function trySave(){try{localStorage.setItem(STK,JSON.stringify(db));return true;}catch(e){return false;}}function setDocUI(pfx,doc){document.getElementById(pfx+'DocName').textContent=doc?('📎 '+doc.name):'';document.getElementById(pfx+'DocOpen').style.display=doc?'':'none';document.getElementById(pfx+'DocDel').style.display=doc?'':'none';}function openDoc(doc){if(!doc||!doc.data)return;try{var arr=doc.data.split(','),mime=(arr[0].match(/:(.*?);/)||[])[1]||'application/octet-stream',bstr=atob(arr[1]),nn=bstr.length,u8=new Uint8Array(nn);while(nn--)u8[nn]=bstr.charCodeAt(nn);var url=URL.createObjectURL(new Blob([u8],{type:mime}));window.open(url,'_blank');}catch(e){window.open(doc.data,'_blank');}}function openUrl(u){if(u){if(!/^https?:\/\//.test(u))u='https://'+u;window.open(u,'_blank');}}
+document.getElementById('fxClose').addEventListener('click',function(){document.getElementById('fixcard').classList.remove('open');});
+document.getElementById('pcClose').addEventListener('click',function(){document.getElementById('planCard').classList.remove('open');});
+document.getElementById('delRoomBtn').addEventListener('click',function(){
+ if(!confirm('Supprimer cette pièce ajoutée ?'))return;
+ db.customRooms=db.customRooms.filter(function(c){return c.id!=cur;});
+ db.tasks=db.tasks.filter(function(t){return t.room!=cur;});db.notes=db.notes.filter(function(n){return n.room!=cur;});
+ delete db.geom['room:'+cur];save();
+ document.getElementById('roomView').style.display='none';document.getElementById('planView').style.display='block';renderOverlay();document.getElementById('roomsLegend').innerHTML=allRooms().map(function(r){return '<span><b>'+r.num+'</b> · '+esc(r.name)+'</span>';}).join('');
+});
+document.getElementById('editBtn').addEventListener('click',function(){
+ editMode=!editMode;this.textContent=editMode?'✓ Terminé':'Ajuster les zones';
+ document.getElementById('resetBtn').style.display=editMode?'':'none';document.getElementById('editHint').style.display=editMode?'':'none';
+ document.getElementById('plan').style.touchAction=editMode?'none':'manipulation';renderOverlay();
+});
+document.getElementById('addRoomBtn').addEventListener('click',function(){
+ var name=prompt('Nom de la nouvelle pièce ?');if(!name)return;
+ var id='c'+uid(),box={x:950,y:820,w:260,h:200};
+ db.customRooms.push({id:id,name:name,area:'',x:box.x,y:box.y,w:box.w,h:box.h});DEF['room:'+id]=box;save();
+ if(!editMode){editMode=true;document.getElementById('editBtn').textContent='✓ Terminé';document.getElementById('resetBtn').style.display='';document.getElementById('editHint').style.display='';document.getElementById('plan').style.touchAction='none';}
+ renderOverlay();document.getElementById('roomsLegend').innerHTML=allRooms().map(function(r){return '<span><b>'+r.num+'</b> · '+esc(r.name)+'</span>';}).join('');
+ alert('Pièce « '+name+' » ajoutée (grisée). Glisse-la et redimensionne-la sur le plan.');
+});
+document.getElementById('resetBtn').addEventListener('click',function(){if(confirm('Remettre toutes les zones à leur position par défaut ?')){db.geom={};save();renderOverlay();}});
+document.getElementById('exportBtn').addEventListener('click',function(){var t=JSON.stringify(db);if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('Réglages copiés. Colle-les quelque part de sûr (note, mail) pour les sauvegarder.');},function(){prompt('Copie ce texte pour sauvegarder tes réglages :',t);});}else{prompt('Copie ce texte pour sauvegarder tes réglages :',t);}});
+document.getElementById('importBtn').addEventListener('click',function(){var s=prompt('Colle ici tes réglages exportés :');if(!s)return;try{var d=JSON.parse(s);db=d;if(!db.customRooms)db.customRooms=[];if(!db.geom)db.geom={};if(!db.fix)db.fix={};if(!db.el)db.el={};if(!db.qty)db.qty={};rebuildCustomDef();save();initPlan();alert('Réglages importés.');}catch(err){alert('Format non reconnu.');}});
+document.addEventListener('change',function(e){if(READONLY)return;if(e.target&&e.target.dataset&&e.target.dataset.q){var num=e.target.dataset.q,v=parseInt(e.target.value,10);if(isNaN(v)||v<0)v=0;db.qty[num]=v;save();renderDevis();}});
+document.addEventListener('click',function(e){var t=e.target;if(READONLY)return;
+ if(t.dataset.ckhide){db.checkHidden[t.dataset.ckhide]=true;save();renderCheck();}else if(t.dataset.ckshow){delete db.checkHidden[t.dataset.ckshow];save();renderCheck();}else if(t.dataset.cktoggle){showHiddenCheck=!showHiddenCheck;renderCheck();}else if(t.dataset.ck){var ci=t.dataset.ck;db.check[ci]=CKORD[(CKORD.indexOf(db.check[ci]||'todo')+1)%CKORD.length];logAction('Checklist → '+CKL[db.check[ci]].l);save();renderCheck();}else if(t.dataset.dv){var n=t.dataset.dv;db.devis[n]=DVORD[(DVORD.indexOf(db.devis[n]||'todo')+1)%DVORD.length];logAction('Devis '+n+' → '+DVL[db.devis[n]].l);save();renderDevis();}
+ else if(t.dataset.st){var x=fT(t.dataset.st);x.s=STORD[(STORD.indexOf(x.s)+1)%STORD.length];logAction('Tâche → '+STL[x.s].l);save();renderLists(cur);}
+ else if(t.dataset.del){db.tasks=db.tasks.filter(function(x){return x.id!=t.dataset.del;});save();renderLists(cur);}
+ else if(t.dataset.delnote){db.notes=db.notes.filter(function(x){return x.id!=t.dataset.delnote;});save();renderLists(cur);}
+ else if(t.dataset.add=='todo'){var i=document.getElementById('addTodo');if(i.value.trim()){db.tasks.push({id:uid(),room:cur,t:i.value.trim(),d:'',s:'todo',p:'m'});i.value='';save();renderLists(cur);}}
+ else if(t.dataset.add=='note'){var i=document.getElementById('addNote');if(i.value.trim()){db.notes.push({id:uid(),room:cur,text:i.value.trim(),date:today()});i.value='';save();renderLists(cur);}}
+});
+function fT(id){for(var i=0;i<db.tasks.length;i++)if(db.tasks[i].id==id)return db.tasks[i];}
+document.getElementById('genBtn').addEventListener('click',function(){openRoom('general');});
+document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('roomView').style.display='none';document.getElementById('planView').style.display='block';renderOverlay();window.scrollTo(0,0);});
+document.getElementById('bgPlan').addEventListener('click',function(){curBg=IMG;this.classList.add('on');document.getElementById('bgElec').classList.remove('on');initPlan();});document.getElementById('bgElec').addEventListener('click',function(){curBg=IMG_ELEC;this.classList.add('on');document.getElementById('bgPlan').classList.remove('on');initPlan();});document.getElementById('fxDoc').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){stagedFx={name:f.name,type:f.type,data:r.result};setDocUI('fx',stagedFx);};r.readAsDataURL(f);e.target.value='';});document.getElementById('pcDoc').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){stagedPc={name:f.name,type:f.type,data:r.result};setDocUI('pc',stagedPc);};r.readAsDataURL(f);e.target.value='';});document.getElementById('fxDocOpen').addEventListener('click',function(){openDoc(stagedFx);});document.getElementById('pcDocOpen').addEventListener('click',function(){openDoc(stagedPc);});document.getElementById('fxDocDel').addEventListener('click',function(){stagedFx=null;setDocUI('fx',null);});document.getElementById('pcDocDel').addEventListener('click',function(){stagedPc=null;setDocUI('pc',null);});document.getElementById('histMore').addEventListener('click',function(){var b=document.getElementById('histBody');var ex=b.classList.toggle('expanded');this.textContent=ex?'Réduire l historique':'Continuer à lire l historique';});document.getElementById('checkMore').addEventListener('click',function(){var b=document.getElementById('checkBody');var ex=b.classList.toggle('expanded');this.textContent=ex?'Réduire la checklist':'Continuer à lire la checklist';});document.getElementById('devisMore').addEventListener('click',function(){var b=document.getElementById('devisBody');var ex=b.classList.toggle('expanded');this.textContent=ex?'Réduire le devis':'Continuer à lire le devis';});document.getElementById('docsBody').addEventListener('click',function(e){var b=e.target.closest('[data-docidx]');if(b){var it=DOCS[+b.getAttribute('data-docidx')];if(it&&it.d&&it.d.doc)openDoc(it.d.doc);}});document.getElementById('genSendBtn').addEventListener('click',function(){try{var data=JSON.stringify(db);var planEl=document.getElementById('plan'),roomEl=document.getElementById('roomSvg');var pS=planEl.innerHTML,rS=roomEl.innerHTML;planEl.innerHTML='';roomEl.innerHTML='';var html=document.documentElement.outerHTML;planEl.innerHTML=pS;roomEl.innerHTML=rS;var inject='<scr'+'ipt>window.PRESET_DB='+data+';window.READONLY=true;</scr'+'ipt>';html=html.replace('<head>','<head>'+inject);var blob=new Blob(['<!DOCTYPE html>'+html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='carnet-chantier-entrepreneur.html';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(url);},1200);alert('Version entrepreneur generee et telechargee. Elle s ouvre deja remplie et en lecture seule.');}catch(err){alert('Erreur : '+err.message);}});var API='/api/state';var SYNC={pass:null,role:null,pending:null,timer:null,updatedAt:0,poll:null};function ensureKeys(){db=db||{};db.tasks=db.tasks||[];db.notes=db.notes||[];db.devis=db.devis||{};db.fix=db.fix||{};db.el=db.el||{};db.geom=db.geom||{};db.customRooms=db.customRooms||[];db.qty=db.qty||{};db.customFix=db.customFix||{};db.hiddenFix=db.hiddenFix||{};db.fixPos=db.fixPos||{};db.check=db.check||{};db.checkHidden=db.checkHidden||{};db.log=db.log||[];}function finishBoot(){ensureKeys();rebuildCustomDef();initPlan();}function bootLocal(){db=load();finishBoot();document.getElementById('gate').style.display='none';}function onlineOK(data){SYNC.role=data.role;ROLE=data.role;SYNC.updatedAt=data.updatedAt||0;db=data.state?data.state:load();ensureKeys();db.log=data.log||db.log||[];finishBoot();document.getElementById('gate').style.display='none';startPoll();}function gateSubmit(){var pw=document.getElementById('gatePass').value;var m=document.getElementById('gateMsg');m.textContent='Connexion…';fetch(API,{headers:{'x-pass':pw}}).then(function(r){return r.json().then(function(j){return{s:r.status,j:j};});}).then(function(o){if(o.s===200){SYNC.pass=pw;onlineOK(o.j);}else if(o.s===401){m.textContent='Mot de passe incorrect.';}else if(o.s===409){SYNC.pass=pw;document.getElementById('gateStep1').style.display='none';document.getElementById('gateSetup').style.display='block';}else if(o.s===503){m.textContent='Base non connectée — mode local…';setTimeout(bootLocal,900);}else{m.textContent='Erreur ('+o.s+').';}}).catch(function(){m.textContent='Serveur injoignable — mode local…';setTimeout(bootLocal,900);});}function setupSubmit(){var ow=document.getElementById('setOwner').value,vi=document.getElementById('setViewer').value;if(!ow||!vi)return;fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup:{owner:ow,viewer:vi}})}).then(function(r){return r.json();}).then(function(){SYNC.pass=ow;return fetch(API,{headers:{'x-pass':ow}});}).then(function(r){return r.json();}).then(function(j){onlineOK(j);}).catch(function(){document.getElementById('gateMsg').textContent='Erreur configuration.';});}function save(){try{localStorage.setItem(STK,JSON.stringify(db));}catch(e){}if(SYNC.role){clearTimeout(SYNC.timer);SYNC.timer=setTimeout(pushNow,700);}}function pushNow(){SYNC.timer=null;var b={state:db};if(SYNC.pending){b.action=SYNC.pending;SYNC.pending=null;}SYNC.updatedAt=Date.now();fetch(API,{method:'POST',headers:{'content-type':'application/json','x-pass':SYNC.pass},body:JSON.stringify(b)}).catch(function(){});}function startPoll(){if(SYNC.poll)clearInterval(SYNC.poll);SYNC.poll=setInterval(function(){fetch(API,{headers:{'x-pass':SYNC.pass}}).then(function(r){return r.json();}).then(function(j){if(!j)return;if(j.log){db.log=j.log;renderHistory();}if(j.updatedAt&&j.updatedAt>SYNC.updatedAt&&!SYNC.timer&&j.state){SYNC.updatedAt=j.updatedAt;db=j.state;ensureKeys();if(document.getElementById('roomView').style.display!=='block'){renderOverlay();renderDevis();renderMaterials();renderCheck();renderDocs();renderHistory();}}}).catch(function(){});},12000);}
+</script>
+</body>
+</html>
